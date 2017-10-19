@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">location_notification</string>
+    <string name="destination">Select Destination</string>
+    <string name="google_place_api">Key</string>
 </resources>
