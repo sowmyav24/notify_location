@@ -1,32 +1,22 @@
 package tracker;
 
-import android.app.Activity;
-import android.content.Context;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.text.DecimalFormat;
 
-import eventnotification.com.tracker.R;
-import utils.MessageUtil;
+import eventnotification.com.tracker.MainActivity;
 
 public class LocationTracker implements android.location.LocationListener {
-    private Context context;
     private Place place;
-    private Activity activity;
-    private LocationManager locationManager;
+    private MainActivity activity;
 
-    public LocationTracker(Context context, Place place, LocationManager locationManager, Activity activity) {
-        this.context = context;
+    public LocationTracker(Place place, MainActivity mainActivity) {
         this.place = place;
-        this.locationManager = locationManager;
-        this.activity = activity;
+        this.activity = mainActivity;
     }
 
     @Override
@@ -41,16 +31,9 @@ public class LocationTracker implements android.location.LocationListener {
         LatLng latLng = place.getLatLng();
         double destinationLat = Double.valueOf(df.format(latLng.latitude));
         double destinationLng = Double.valueOf(df.format(latLng.longitude));
-        if (destinationLat == currentLat && destinationLng == destinationLng) {
-            sendMessage(currentLat, currentLng);
+        if (destinationLat == currentLat && destinationLng == currentLng) {
+            activity.performAction();
         }
-    }
-
-    private void sendMessage(double latitude, double longitude) {
-        TextView textView = activity.findViewById(R.id.text);
-        MessageUtil.sendMessage(context, textView.getText().toString());
-        Toast.makeText(context, "Latitude " + latitude + "Longitude " + longitude, Toast.LENGTH_LONG).show();
-        locationManager.removeUpdates(this);
     }
 
     @Override

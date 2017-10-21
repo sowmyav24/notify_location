@@ -18,12 +18,15 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import tracker.LocationTracker;
+import utils.MessageUtil;
 
 public class MainActivity extends AppCompatActivity {
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     private static final int MY_PERMISSIONS_REQUEST_SEND_SMS = 0;
     private static final int PLACE_PICKER = 1;
     private Button button;
+    private LocationManager locationManager;
+    private LocationTracker locationTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +66,17 @@ public class MainActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
             }
 
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            LocationTracker locationTracker = new LocationTracker(getApplicationContext(), place, locationManager, MainActivity.this);
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            locationTracker = new LocationTracker(place, MainActivity.this);
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, locationTracker);
 
         }
     }
 
+    public void performAction() {
+        MessageUtil messageUtil = new MessageUtil();
+        messageUtil.performAction(getApplicationContext(), MainActivity.this);
+        locationManager.removeUpdates(locationTracker);
+    }
 }
 
