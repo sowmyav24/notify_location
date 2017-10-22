@@ -1,7 +1,7 @@
 package eventnotification.com.tracker;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int ALL_PERMISSIONS = 100;
     private static final int PLACE_PICKER = 1;
     private static final int CONTACT_PICKER = 2;
+    public static final String PACKAGE_NAME = "tracker";
     private MessageAction messageAction;
     private LocationManager locationManager;
     private LocationTracker locationTracker;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void performAction() {
         messageAction.performAction();
-        locationManager.removeUpdates(locationTracker);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -72,15 +72,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void locationPickerActivity(Intent data) {
         Place place = PlacePicker.getPlace(this, data);
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationTracker = new LocationTracker(place, MainActivity.this);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        locationTracker = new LocationTracker(MainActivity.this, locationManager, place, getApplicationContext());
         invokeContacts();
     }
 
     private void contactsActivity(Intent data) {
+        registerReceiver(locationTracker, new IntentFilter(PACKAGE_NAME));
         messageAction = new MessageAction(getApplicationContext());
         messageAction.onActivity(data, locationManager, locationTracker);
     }
-
 }
 

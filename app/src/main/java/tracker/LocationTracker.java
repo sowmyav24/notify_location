@@ -1,53 +1,51 @@
 package tracker;
 
-import android.location.Location;
-import android.os.Bundle;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.text.DecimalFormat;
 
 import eventnotification.com.tracker.MainActivity;
 
-public class LocationTracker implements android.location.LocationListener {
-    private Place place;
-    private MainActivity activity;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static eventnotification.com.tracker.MainActivity.MY_PERMISSIONS_REQUEST_LOCATION;
+import static eventnotification.com.tracker.MainActivity.PACKAGE_NAME;
 
-    public LocationTracker(Place place, MainActivity mainActivity) {
-        this.place = place;
+public class LocationTracker extends BroadcastReceiver {
+    private MainActivity activity;
+    private LocationManager locationManager;
+    private Place place;
+    private Context context;
+    PendingIntent pendingIntent;
+
+    public LocationTracker(MainActivity mainActivity, LocationManager locationManager, Place place, Context context) {
         this.activity = mainActivity;
+        this.locationManager = locationManager;
+        this.place = place;
+        this.context = context;
+        this.pendingIntent = PendingIntent.getBroadcast(context, -1, new Intent(PACKAGE_NAME), 0);
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        getExactLocation(location);
-    }
-
-    private void getExactLocation(Location location) {
-        DecimalFormat df = new DecimalFormat("#.####");
-        double currentLat = Double.valueOf(df.format(location.getLatitude()));
-        double currentLng = Double.valueOf(df.format(location.getLongitude()));
-        LatLng latLng = place.getLatLng();
-        double destinationLat = Double.valueOf(df.format(latLng.latitude));
-        double destinationLng = Double.valueOf(df.format(latLng.longitude));
-        if (destinationLat == currentLat && destinationLng == currentLng) {
+    public void onReceive(Context context, Intent intent) {
+        String key = LocationManager.KEY_PROXIMITY_ENTERING;
+        boolean state = intent.getBooleanExtra(key, false);
+        if (state) {
             activity.performAction();
+            locationManager.removeProximityAlert(pendingIntent);
         }
     }
 
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
+    public void startListening() {
+        if (ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
+        }
+        locationManager.addProximityAlert(place.getLatLng().latitude, place.getLatLng().longitude, 1000, -1, pendingIntent);
     }
 }
