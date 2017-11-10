@@ -46,6 +46,6 @@ public class LocationTracker extends BroadcastReceiver {
         if (ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, new String[]{ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_LOCATION);
         }
-        locationManager.addProximityAlert(place.getLatLng().latitude, place.getLatLng().longitude, 1000, -1, pendingIntent);
+        locationManager.addProximityAlert(place.getLatLng().latitude, place.getLatLng().longitude, 200, -1, pendingIntent);
     }
 }

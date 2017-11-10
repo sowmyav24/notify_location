@@ -14,6 +14,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import actions.MessageAction;
+import service.BackgroundService;
 import tracker.LocationTracker;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         invokeMap();
+        startService(new Intent(this, BackgroundService.class));
     }
 
     public void performAction() {
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             Intent intent = builder.build(MainActivity.this);
             startActivityForResult(intent, PLACE_PICKER);
+            MainActivity.this.finish();
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }

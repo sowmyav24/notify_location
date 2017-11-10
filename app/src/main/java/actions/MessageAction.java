@@ -24,9 +24,8 @@ public class MessageAction extends AppCompatActivity implements NotificationActi
     @Override
     public void performAction() {
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(contactNumber, null, "Reached ! (From App)", null, null);
+        smsManager.sendTextMessage(contactNumber, null, "Reached !!", null, null);
         Toast.makeText(context, "SMS sent.", Toast.LENGTH_LONG).show();
-
     }
 
     @Override
